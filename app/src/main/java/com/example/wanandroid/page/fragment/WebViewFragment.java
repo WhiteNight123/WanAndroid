@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.wanandroid.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * @author WhiteNight123 (Guo Xiaoqiang)
@@ -25,6 +26,7 @@ import com.example.wanandroid.R;
 public class WebViewFragment extends Fragment {
     private static final String TAG = "q";
     private Activity mActivity;
+    private FloatingActionButton button;
 
     private String url;
     private View rootView;
@@ -46,7 +48,13 @@ public class WebViewFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_webview, container, false);
         webView = rootView.findViewById(R.id.webview);
-
+        button=rootView.findViewById(R.id.fragment_webview_btn);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl(url);
         Log.e(TAG, "onCreateView: ");

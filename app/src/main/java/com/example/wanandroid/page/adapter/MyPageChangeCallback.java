@@ -1,9 +1,12 @@
 package com.example.wanandroid.page.adapter;
 
 
+import android.widget.TextView;
+
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.wanandroid.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
