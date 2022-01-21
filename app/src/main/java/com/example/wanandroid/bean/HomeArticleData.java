@@ -1,11 +1,13 @@
 package com.example.wanandroid.bean;
 
 /**
+ * 热门文章的数据
+ *
  * @author WhiteNight123 (Guo Xiaoqiang)
  * @email 1448375249@qq.com
  * @data 2022/1/17
  */
-public class HomeDownData {
+public class HomeArticleData {
     private String author;
     private String time;
     private String title;

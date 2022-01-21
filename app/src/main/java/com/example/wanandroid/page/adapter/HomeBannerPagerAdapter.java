@@ -16,7 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.wanandroid.R;
-import com.example.wanandroid.bean.HomeUpData;
+import com.example.wanandroid.bean.HomeBannerData;
 
 import java.util.ArrayList;
 
@@ -25,13 +25,13 @@ import java.util.ArrayList;
  * @email 1448375249@qq.com
  * @data 2022/1/15
  */
-public class HomeUpPagerAdapter extends RecyclerView.Adapter<HomeUpPagerAdapter.InnerHolder> {
-    private ArrayList<HomeUpData> data;
-    public Context context;
+public class HomeBannerPagerAdapter extends RecyclerView.Adapter<HomeBannerPagerAdapter.InnerHolder> {
+    private ArrayList<HomeBannerData> mHomeBannerData;
+    public Context mContext;
 
-    public HomeUpPagerAdapter(Context context, ArrayList<HomeUpData> data) {
-        this.context = context;
-        this.data = data;
+    public HomeBannerPagerAdapter(Context context, ArrayList<HomeBannerData> data) {
+        this.mContext = context;
+        this.mHomeBannerData = data;
     }
 
     @NonNull
@@ -41,9 +41,9 @@ public class HomeUpPagerAdapter extends RecyclerView.Adapter<HomeUpPagerAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HomeUpPagerAdapter.InnerHolder holder, int position) {
-        holder.textView.setText(data.get(position).getTitle());
-        Glide.with(context).load(data.get(position).getImageUrl()).into(new SimpleTarget<Drawable>() {
+    public void onBindViewHolder(@NonNull HomeBannerPagerAdapter.InnerHolder holder, int position) {
+        holder.textView.setText(mHomeBannerData.get(position).getTitle());
+        Glide.with(mContext).load(mHomeBannerData.get(position).getImageUrl()).into(new SimpleTarget<Drawable>() {
             @Override
             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                 holder.imageView.setImageDrawable(resource);
@@ -53,7 +53,7 @@ public class HomeUpPagerAdapter extends RecyclerView.Adapter<HomeUpPagerAdapter.
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mHomeBannerData.size();
     }
 
     public static class InnerHolder extends RecyclerView.ViewHolder {

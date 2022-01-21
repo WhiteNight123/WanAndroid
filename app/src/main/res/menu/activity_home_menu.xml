@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/toolbar_search"
+        android:id="@+id/main_toolbar_search"
         android:icon="@drawable/ic_search"
         android:title="搜索"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/toolbar_setting"
+        android:id="@+id/main_toolbar_setting"
         android:title="设置"
         app:showAsAction="never" />
 </menu>

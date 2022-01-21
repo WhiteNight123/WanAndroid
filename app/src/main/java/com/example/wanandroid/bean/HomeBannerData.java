@@ -1,11 +1,13 @@
 package com.example.wanandroid.bean;
 
 /**
+ * Banner的数据
+ *
  * @author WhiteNight123 (Guo Xiaoqiang)
  * @email 1448375249@qq.com
  * @data 2022/1/15
  */
-public class HomeUpData {
+public class HomeBannerData {
     private String title;
     private String imageUrl;
 

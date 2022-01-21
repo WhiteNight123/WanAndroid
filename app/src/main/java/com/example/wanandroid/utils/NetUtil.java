@@ -9,6 +9,8 @@ import java.net.URL;
 import java.util.HashMap;
 
 /**
+ * 安卓第3次作业封装的网络请求排上用场了
+ *
  * @author WhiteNight123 (Guo Xiaoqiang)
  * @email 1448375249@qq.com
  * @data 2022/1/15

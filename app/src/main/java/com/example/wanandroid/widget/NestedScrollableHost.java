@@ -16,6 +16,7 @@ import java.util.HashMap;
 /**
  * ViewPager2 嵌套 ViewPager2 解决方案
  * 外部套个自定义view拦截处理
+ * 参考文档: https://blog.csdn.net/kejia90/article/details/108827617
  *
  * @author WhiteNight123 (Guo Xiaoqiang)
  * @email 1448375249@qq.com

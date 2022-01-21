@@ -1,7 +1,5 @@
 package com.example.wanandroid.page.fragment;
 
-import static android.content.ContentValues.TAG;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,63 +9,66 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.wanandroid.bean.HomeDownData;
-import com.example.wanandroid.page.adapter.HomeDownRecycleAdapter;
-import com.example.wanandroid.page.adapter.HomeUpPagerAdapter;
+import com.example.wanandroid.bean.HomeArticleData;
+import com.example.wanandroid.page.adapter.HomeArticleRecycleAdapter;
+import com.example.wanandroid.page.adapter.HomeBannerPagerAdapter;
 import com.example.wanandroid.R;
-import com.example.wanandroid.bean.HomeUpData;
+import com.example.wanandroid.bean.HomeBannerData;
 import com.example.wanandroid.utils.NetCallbackListener;
 import com.example.wanandroid.utils.NetUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
 
 /**
+ * 首页 ViewPager2+Recycle
+ * 展示 Banner和热门文章
+ *
  * @author WhiteNight123 (Guo Xiaoqiang)
  * @email 1448375249@qq.com
  * @data 2022/1/15
  */
 public class HomeFragment extends Fragment {
-    private ArrayList<HomeUpData> upData = new ArrayList<>();
-    private ArrayList<HomeDownData> downData = new ArrayList<>();
-    private ViewPager2 viewPager2;
-    private boolean isFirstLoading = true;
-    private WebViewFragment webViewFragment;
-    private RecyclerView recyclerView;
+    private static final String TAG = "HomeFragment: ";
+    private ArrayList<HomeBannerData> mBannerData = new ArrayList<>();
+    private ArrayList<HomeArticleData> mArticleData = new ArrayList<>();
+    private ViewPager2 mViewPager2;
+    private WebViewFragment mWebViewFragment;
+    private RecyclerView mRecyclerView;
     private Activity mActivity;
-    private View rootView;
-    private HomeUpPagerAdapter adapterVP2;
-    private HomeDownRecycleAdapter adapterRV;
+    private View mRootView;
+    private HomeBannerPagerAdapter mBannerPagerAdapter;
+    private HomeArticleRecycleAdapter mArticleRecycleAdapter;
+
+    private boolean mFirstLoading = true;
+
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message msg) {
             switch (msg.what) {
                 case 1:
                     jsonDecodeVP2(msg.obj.toString());
-                    adapterVP2.notifyDataSetChanged();
-                    Log.d(TAG, "Handler1" + upData.toString());
+                    mBannerPagerAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "Handler1" + mBannerData.toString());
 
                     break;
                 case 2:
                     jsonDecodeRV(msg.obj.toString());
-                    adapterRV.notifyDataSetChanged();
-                    Log.d(TAG, "Handler2" + downData.toString());
+                    mArticleRecycleAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "Handler2" + mArticleData.toString());
                     break;
 
             }
@@ -87,45 +88,42 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_home, container, false);
-        initData2();
-        initData1();
-        viewPager2 = rootView.findViewById(R.id.home_item_vp2);
-        adapterVP2 = new HomeUpPagerAdapter(mActivity.getApplicationContext(), upData);
-        viewPager2.setAdapter(adapterVP2);
-        recyclerView = rootView.findViewById(R.id.home_item_rv);
-        adapterRV = new HomeDownRecycleAdapter(downData);
-        recyclerView.setAdapter(adapterRV);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        adapterRV.setOnHomeRecycleViewListener(new HomeDownRecycleAdapter.HomeRecycleViewListener() {
+        mRootView = inflater.inflate(R.layout.fragment_home, container, false);
+        initData();
+
+        mViewPager2 = mRootView.findViewById(R.id.home_item_vp2);
+        mBannerPagerAdapter = new HomeBannerPagerAdapter(mActivity.getApplicationContext(), mBannerData);
+        mViewPager2.setAdapter(mBannerPagerAdapter);
+
+        mRecyclerView = mRootView.findViewById(R.id.home_item_rv);
+        mArticleRecycleAdapter = new HomeArticleRecycleAdapter(mArticleData);
+        mRecyclerView.setAdapter(mArticleRecycleAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mArticleRecycleAdapter.setOnHomeRecycleViewListener(new HomeArticleRecycleAdapter.HomeRecycleViewListener() {
             @Override
-            public void onHomeRecycleViewClick(View view,Object data,int position) {
-                webViewFragment = (WebViewFragment) getParentFragmentManager().findFragmentById(R.id.fragment_webview);
-                replaceFragment(webViewFragment,data.toString());
-                Log.d(TAG, "onHomeRecycleViewClick:111 " + webViewFragment);
+            public void onHomeRecycleViewClick(View view, Object data, int position) {
+                mWebViewFragment = (WebViewFragment) getParentFragmentManager().findFragmentById(R.id.fragment_main);
+                replaceFragment(mWebViewFragment, data.toString());
+                Log.d(TAG, "onHomeRecycleViewClick:111 " + mWebViewFragment);
             }
         });
-        Log.d(TAG, "OnCreatView1" + upData.toString());
-        Log.d(TAG, "OnCreatView2" + downData.toString());
-        return rootView;
+        Log.d(TAG, "OnCreatView1" + mBannerData.toString());
+        Log.d(TAG, "OnCreatView2" + mArticleData.toString());
+        return mRootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (!isFirstLoading) {
+        if (!mFirstLoading) {
             //如果不是第一次加载，刷新数据
-            adapterVP2.notifyDataSetChanged();
-            adapterRV.notifyDataSetChanged();
+            mBannerPagerAdapter.notifyDataSetChanged();
+            mArticleRecycleAdapter.notifyDataSetChanged();
         }
-        isFirstLoading = false;
+        mFirstLoading = false;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
 
     private static HomeFragment newInstance(String str) {
         HomeFragment frag = new HomeFragment();
@@ -135,15 +133,15 @@ public class HomeFragment extends Fragment {
         return frag;
     }
 
-    public void initData1() {
+    public void initData() {
         NetUtil.sendHttpRequest("https://www.wanandroid.com/banner/json", "GET", null, new NetCallbackListener() {
             @Override
             public void onFinish(String response) {
-                Message msg = Message.obtain();
+                Message msg = new Message();
                 msg.what = 1;
                 msg.obj = response;
                 handler.sendMessage(msg);
-                Log.d(TAG, "net1" + upData.toString());
+                Log.d(TAG, "net1" + mBannerData.toString());
             }
 
             @Override
@@ -151,9 +149,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-    }
-
-    public void initData2() {
         NetUtil.sendHttpRequest("https://www.wanandroid.com/article/top/json", "GET", null, new NetCallbackListener() {
             @Override
             public void onFinish(String response) {
@@ -161,7 +156,7 @@ public class HomeFragment extends Fragment {
                 msg.what = 2;
                 msg.obj = response;
                 handler.sendMessage(msg);
-                Log.d(TAG, "net2" + downData.toString());
+                Log.d(TAG, "net2" + mArticleData.toString());
             }
 
             @Override
@@ -171,8 +166,9 @@ public class HomeFragment extends Fragment {
         });
     }
 
+
     private void jsonDecodeVP2(String jsonData) {
-        upData.clear();
+        mBannerData.clear(); //初始化数据
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
             JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -180,12 +176,12 @@ public class HomeFragment extends Fragment {
                 JSONObject data = jsonArray.getJSONObject(i);
                 String title = data.getString("title");
                 String imagePath = data.getString("imagePath");
-                HomeUpData homeUpData = new HomeUpData();
-                homeUpData.setTitle(title);
-                homeUpData.setImageUrl(imagePath);
-                upData.add(homeUpData);
+                HomeBannerData homeBannerData = new HomeBannerData();
+                homeBannerData.setTitle(title);
+                homeBannerData.setImageUrl(imagePath);
+                mBannerData.add(homeBannerData);
             }
-            Log.d(TAG, "jsonDeco1" + upData.toString());
+            Log.d(TAG, "jsonDeco1" + mBannerData.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -200,8 +196,8 @@ public class HomeFragment extends Fragment {
                 JSONObject data = jsonArray.getJSONObject(i);
                 String author = data.getString("author");
                 String time = data.getString("niceDate");
-                if(time.length()>10){
-                    time=time.substring(0,10);
+                if (time.length() > 10) {
+                    time = time.substring(0, 10);
                 }
                 String title = data.getString("title");
                 String content = data.getString("desc");
@@ -211,30 +207,30 @@ public class HomeFragment extends Fragment {
                 content = content.replaceAll(spaceRegex, ""); //过滤空格
                 String chapterName = data.getString("superChapterName");
                 String url = data.getString("link");
-                HomeDownData homeDownData = new HomeDownData();
-                homeDownData.setAuthor(author);
-                homeDownData.setTitle(title);
-                homeDownData.setTime(time);
-                homeDownData.setUrl(url);
-                homeDownData.setContent(content);
-                homeDownData.setChapterName(chapterName);
-                downData.add(homeDownData);
-                Log.d(TAG, "jsonDeco2" + downData.toString());
+                HomeArticleData homeArticleData = new HomeArticleData();
+                homeArticleData.setAuthor(author);
+                homeArticleData.setTitle(title);
+                homeArticleData.setTime(time);
+                homeArticleData.setUrl(url);
+                homeArticleData.setContent(content);
+                homeArticleData.setChapterName(chapterName);
+                mArticleData.add(homeArticleData);
+                Log.d(TAG, "jsonDeco2" + mArticleData.toString());
             }
-            Log.d(TAG, "jsonDeco2" + downData.toString());
+            Log.d(TAG, "jsonDeco2" + mArticleData.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void replaceFragment(Fragment childFragment,String url) {
+    private void replaceFragment(Fragment childFragment, String url) {
         if (childFragment == null) {
             childFragment = new WebViewFragment(url);
             Log.d(TAG, "replaceFragment: " + childFragment);
             FragmentManager fm = getParentFragmentManager();
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.addToBackStack(null);
-            transaction.add(R.id.fragment_webview, childFragment);
+            transaction.add(R.id.fragment_main, childFragment);
             transaction.commit();
         } else {
             Log.e(TAG, "replaceFragment: found exiting childFragment, no need to add it again");

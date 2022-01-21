@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wanandroid.R;
-import com.example.wanandroid.bean.HomeDownData;
+import com.example.wanandroid.bean.HomeArticleData;
 
 import java.util.ArrayList;
 
@@ -18,25 +18,25 @@ import java.util.ArrayList;
  * @email 1448375249@qq.com
  * @data 2022/1/17
  */
-public class HomeDownRecycleAdapter extends RecyclerView.Adapter<HomeDownRecycleAdapter.InnerHolder> {
-    private ArrayList<HomeDownData> data;
+public class HomeArticleRecycleAdapter extends RecyclerView.Adapter<HomeArticleRecycleAdapter.InnerHolder> {
+    private ArrayList<HomeArticleData> mData;
     private HomeRecycleViewListener mListener;
 
-    public HomeDownRecycleAdapter(ArrayList<HomeDownData> data) {
-        this.data = data;
+    public HomeArticleRecycleAdapter(ArrayList<HomeArticleData> data) {
+        this.mData = data;
     }
 
     @NonNull
     @Override
     public InnerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.home_item_rv, parent, false);
-        final InnerHolder holder=new InnerHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_item_rv, parent, false);
+        final InnerHolder holder = new InnerHolder(view);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position=holder.getAdapterPosition();
-                String url=data.get(position).getUrl();
-                mListener.onHomeRecycleViewClick(view,url,position);
+                int position = holder.getAdapterPosition();
+                String url = mData.get(position).getUrl();
+                mListener.onHomeRecycleViewClick(view, url, position);
             }
         });
         return holder;
@@ -44,17 +44,17 @@ public class HomeDownRecycleAdapter extends RecyclerView.Adapter<HomeDownRecycle
 
     @Override
     public void onBindViewHolder(@NonNull InnerHolder holder, int position) {
-        holder.tvAuthor.setText(data.get(position).getAuthor());
-        holder.tvTime.setText(data.get(position).getTime());
-        holder.tvTitle.setText(data.get(position).getTitle());
-        holder.tvContent.setText(data.get(position).getContent());
-        holder.tvChapterName.setText(data.get(position).getChapterName());
+        holder.tvAuthor.setText(mData.get(position).getAuthor());
+        holder.tvTime.setText(mData.get(position).getTime());
+        holder.tvTitle.setText(mData.get(position).getTitle());
+        holder.tvContent.setText(mData.get(position).getContent());
+        holder.tvChapterName.setText(mData.get(position).getChapterName());
 
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mData.size();
     }
 
     public static class InnerHolder extends RecyclerView.ViewHolder {
@@ -73,12 +73,14 @@ public class HomeDownRecycleAdapter extends RecyclerView.Adapter<HomeDownRecycle
             tvChapterName = itemView.findViewById(R.id.home_tv_rv_chaptername);
         }
     }
+
     //增加点击监听
-    public void setOnHomeRecycleViewListener(HomeRecycleViewListener listener){
-        this.mListener=listener;
+    public void setOnHomeRecycleViewListener(HomeRecycleViewListener listener) {
+        this.mListener = listener;
     }
+
     //点击监听回调接口
-    public interface HomeRecycleViewListener{
-        void onHomeRecycleViewClick(View view,Object data,int position);
+    public interface HomeRecycleViewListener {
+        void onHomeRecycleViewClick(View view, Object data, int position);
     }
 }

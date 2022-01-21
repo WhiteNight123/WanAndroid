@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -19,21 +18,24 @@ import com.example.wanandroid.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
+ * WebView
+ * 显示网页
+ *
  * @author WhiteNight123 (Guo Xiaoqiang)
  * @email 1448375249@qq.com
  * @data 2022/1/18
  */
 public class WebViewFragment extends Fragment {
-    private static final String TAG = "q";
+    private static final String TAG = "WebViewFragment:";
     private Activity mActivity;
     private FloatingActionButton button;
 
-    private String url;
-    private View rootView;
-    private WebView webView;
+    private String mUrl;
+    private View mRootView;
+    private WebView mWebView;
 
     public WebViewFragment(String url) {
-        this.url = url;
+        this.mUrl = url;
     }
 
     @Override
@@ -46,26 +48,21 @@ public class WebViewFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_webview, container, false);
-        webView = rootView.findViewById(R.id.webview);
-        button=rootView.findViewById(R.id.fragment_webview_btn);
+        mRootView = inflater.inflate(R.layout.fragment_webview, container, false);
+        mWebView = mRootView.findViewById(R.id.fragment_wb);
+        button = mRootView.findViewById(R.id.fragment_webview_btn);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getActivity().onBackPressed();
             }
         });
-        webView.setWebViewClient(new WebViewClient());
-        webView.loadUrl(url);
+        mWebView.setWebViewClient(new WebViewClient());
+        mWebView.loadUrl(mUrl);
         Log.e(TAG, "onCreateView: ");
-        return rootView;
+        return mRootView;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.e(TAG, "onActivityCreated: ");
-    }
 
     @Override
     public void onStart() {

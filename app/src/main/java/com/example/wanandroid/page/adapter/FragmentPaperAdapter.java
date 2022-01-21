@@ -9,27 +9,29 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import java.util.ArrayList;
 
 /**
+ * 管理Fragment
+ *
  * @author WhiteNight123 (Guo Xiaoqiang)
  * @email 1448375249@qq.com
  * @data 2022/1/15
  */
 public class FragmentPaperAdapter extends FragmentStateAdapter {
-    private final ArrayList<Fragment> fragments;
+    private final ArrayList<Fragment> mFragments;
 
     public FragmentPaperAdapter(FragmentActivity fragmentActivity, ArrayList<Fragment> fragments) {
         super(fragmentActivity);
-        this.fragments = fragments;
+        this.mFragments = fragments;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return fragments.get(position);
+        return mFragments.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return fragments.size();
+        return mFragments.size();
     }
 }
 
