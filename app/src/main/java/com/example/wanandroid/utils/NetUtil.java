@@ -26,9 +26,10 @@ public class NetUtil {
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setReadTimeout(8000);
                     connection.setConnectTimeout(8000);
-                    connection.setDoOutput(false);
+
                     connection.setDoInput(true);
                     if ("POST".equals(requestMethod)) {
+                        connection.setDoOutput(true);
                         StringBuilder dataToWrite = new StringBuilder();
                         for (String key : params.keySet()) {
                             dataToWrite.append(key).append("=").append(params.get(key)).append("&");
@@ -36,6 +37,45 @@ public class NetUtil {
                         OutputStream outputStream = connection.getOutputStream();
                         outputStream.write(dataToWrite.substring(0, dataToWrite.length() - 1).getBytes());
                     }
+                    InputStream in = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder response = new StringBuilder();
+                    String oneLine;
+                    while ((oneLine = reader.readLine()) != null) {
+                        response.append(oneLine);
+                    }
+                    if (listener != null) {
+                        listener.onFinish(response.toString());
+                    }
+                } catch (Exception e) {
+                    if (listener != null) {
+                        listener.onError(e);
+                    }
+                } finally {
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    //带cookie的请求
+    public static void sendHttpRequest(final String address, String cookie, final NetCallbackListener listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection connection = null;
+                try {
+                    URL url = new URL(address);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setReadTimeout(8000);
+                    connection.setConnectTimeout(8000);
+                    connection.setRequestMethod("GET");
+                    connection.setRequestProperty("cookie", cookie);
+
+                    connection.setDoInput(true);
+
                     InputStream in = connection.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                     StringBuilder response = new StringBuilder();

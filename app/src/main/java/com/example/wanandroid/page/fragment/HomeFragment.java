@@ -27,6 +27,7 @@ import com.example.wanandroid.R;
 import com.example.wanandroid.bean.HomeBannerData;
 import com.example.wanandroid.utils.NetCallbackListener;
 import com.example.wanandroid.utils.NetUtil;
+import com.example.wanandroid.utils.StartUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,7 +43,7 @@ import java.util.ArrayList;
  * @data 2022/1/15
  */
 public class HomeFragment extends Fragment {
-    private static final String TAG = "HomeFragment: ";
+    private static final String TAG = "HomeFragment";
     private ArrayList<HomeBannerData> mBannerData = new ArrayList<>();
     private ArrayList<HomeArticleData> mArticleData = new ArrayList<>();
     private ViewPager2 mViewPager2;
@@ -55,6 +56,7 @@ public class HomeFragment extends Fragment {
 
     private boolean mFirstLoading = true;
 
+
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message msg) {
@@ -66,10 +68,13 @@ public class HomeFragment extends Fragment {
 
                     break;
                 case 2:
-                    jsonDecodeRV(msg.obj.toString());
+                    jsonDecodeRV1(msg.obj.toString());
                     mArticleRecycleAdapter.notifyDataSetChanged();
                     Log.d(TAG, "Handler2" + mArticleData.toString());
                     break;
+                case 12:
+                    jsonDecodeRV2(msg.obj.toString());
+                    mArticleRecycleAdapter.notifyDataSetChanged();
 
             }
             return false;
@@ -105,11 +110,10 @@ public class HomeFragment extends Fragment {
             public void onHomeRecycleViewClick(View view, Object data, int position) {
                 mWebViewFragment = (WebViewFragment) getParentFragmentManager().findFragmentById(R.id.fragment_main);
                 replaceFragment(mWebViewFragment, data.toString());
+//                StartUtils.startActivityById(getActivity(),view.getId());
                 Log.d(TAG, "onHomeRecycleViewClick:111 " + mWebViewFragment);
             }
         });
-        Log.d(TAG, "OnCreatView1" + mBannerData.toString());
-        Log.d(TAG, "OnCreatView2" + mArticleData.toString());
         return mRootView;
     }
 
@@ -141,7 +145,6 @@ public class HomeFragment extends Fragment {
                 msg.what = 1;
                 msg.obj = response;
                 handler.sendMessage(msg);
-                Log.d(TAG, "net1" + mBannerData.toString());
             }
 
             @Override
@@ -156,12 +159,25 @@ public class HomeFragment extends Fragment {
                 msg.what = 2;
                 msg.obj = response;
                 handler.sendMessage(msg);
-                Log.d(TAG, "net2" + mArticleData.toString());
             }
 
             @Override
             public void onError(Exception e) {
                 Log.d(TAG, "onError: " + e);
+            }
+        });
+        NetUtil.sendHttpRequest("https://www.wanandroid.com/article/list/0/json", "GET", null, new NetCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                Message message=Message.obtain();
+                message.what=12;
+                message.obj=response;
+                handler.sendMessage(message);
+            }
+
+            @Override
+            public void onError(Exception e) {
+e.printStackTrace();
             }
         });
     }
@@ -187,7 +203,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void jsonDecodeRV(String jsonData) {
+    private void jsonDecodeRV1(String jsonData) {
 
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
@@ -215,7 +231,35 @@ public class HomeFragment extends Fragment {
                 homeArticleData.setContent(content);
                 homeArticleData.setChapterName(chapterName);
                 mArticleData.add(homeArticleData);
-                Log.d(TAG, "jsonDeco2" + mArticleData.toString());
+            }
+            Log.d(TAG, "jsonDeco2" + mArticleData.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void jsonDecodeRV2(String jsonData) {
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonData);
+            JSONObject jsonObject1=jsonObject.getJSONObject("data");
+            JSONArray jsonArray = jsonObject1.getJSONArray("datas");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject data = jsonArray.getJSONObject(i);
+                String author = data.getString("author");
+                String time = data.getString("niceDate");
+                if (time.length() > 10) {
+                    time = time.substring(0, 10);
+                }
+                String title = data.getString("title");
+                String chapterName = data.getString("superChapterName");
+                String url = data.getString("link");
+                HomeArticleData homeArticleData = new HomeArticleData();
+                homeArticleData.setAuthor(author);
+                homeArticleData.setTitle(title);
+                homeArticleData.setTime(time);
+                homeArticleData.setUrl(url);
+                homeArticleData.setChapterName(chapterName);
+                mArticleData.add(homeArticleData);
             }
             Log.d(TAG, "jsonDeco2" + mArticleData.toString());
         } catch (Exception e) {

@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 public class HotSearchRecycleAdapter extends RecyclerView.Adapter<HotSearchRecycleAdapter.InnerHolder> {
     private ArrayList<String> mHotSearchDdata;
-
+    private HotSearchViewListener mListener;
 
     public HotSearchRecycleAdapter(ArrayList<String> data) {
         this.mHotSearchDdata = data;
@@ -28,7 +28,17 @@ public class HotSearchRecycleAdapter extends RecyclerView.Adapter<HotSearchRecyc
     @NonNull
     @Override
     public InnerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new InnerHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.hotsearch_item_rv, parent, false));
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hotsearch_item_rv, parent, false);
+        final InnerHolder holder = new InnerHolder(view);
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                String data = mHotSearchDdata.get(position);
+                mListener.onHotSearchItemClick(view, data, position);
+            }
+        });
+        return holder;
 
     }
 
@@ -49,5 +59,14 @@ public class HotSearchRecycleAdapter extends RecyclerView.Adapter<HotSearchRecyc
             super(itemView);
             button = itemView.findViewById(R.id.hotsearch_btn);
         }
+    }
+
+    public void setOnHotSearchRecycleViewListener(HotSearchViewListener listener) {
+        this.mListener = listener;
+
+    }
+
+    public interface HotSearchViewListener {
+        void onHotSearchItemClick(View view, String data, int position);
     }
 }

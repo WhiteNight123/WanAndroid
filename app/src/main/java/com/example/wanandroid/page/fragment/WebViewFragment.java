@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -57,6 +58,10 @@ public class WebViewFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
+        WebSettings webSettings = mWebView.getSettings();
+        //解决部分网页不能显示的问题
+        webSettings.setDomStorageEnabled(true); //主要是这句
+        webSettings.setJavaScriptEnabled(true); //启用js
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.loadUrl(mUrl);
         Log.e(TAG, "onCreateView: ");

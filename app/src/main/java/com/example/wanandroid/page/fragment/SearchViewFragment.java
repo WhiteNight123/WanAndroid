@@ -22,23 +22,21 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.example.wanandroid.R;
-import com.example.wanandroid.page.activity.MainActivity;
 import com.example.wanandroid.page.adapter.HotSearchRecycleAdapter;
 import com.example.wanandroid.utils.NetCallbackListener;
 import com.example.wanandroid.utils.NetUtil;
-import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Toolbar+SearchView
@@ -52,10 +50,13 @@ public class SearchViewFragment extends Fragment {
     private static final String TAG = "SearchViewFragment:";
     private Activity mActivity;
     private SearchView mSearchView;
+    private SearchResultFragment searchResultFragment;
+    private View mRootView;
     private SearchView.SearchAutoComplete mSearchEditView;
     private ArrayList<String> mHotSearchData = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private HotSearchRecycleAdapter mHotSearchRecycleAdapter;
+    private boolean mFirstLoading = true;
 
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
@@ -82,11 +83,21 @@ public class SearchViewFragment extends Fragment {
         mActivity = (AppCompatActivity) context;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!mFirstLoading) {
+            //如果不是第一次加载，刷新数据
+            mHotSearchRecycleAdapter.notifyDataSetChanged();
+        }
+        mFirstLoading = false;
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_search, container, false);
-        Toolbar toolbar = rootView.findViewById(R.id.fragment_searchview_toolbar);
+
+        mRootView = inflater.inflate(R.layout.fragment_search, container, false);
+        Toolbar toolbar = mRootView.findViewById(R.id.fragment_searchview_toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         //显示返回
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -115,13 +126,29 @@ public class SearchViewFragment extends Fragment {
 
         initData();
         Log.d(TAG, "onCreateViewhahah: " + mHotSearchData);
-        mRecyclerView = rootView.findViewById(R.id.fragment_hotsearch_rv);
+        mRecyclerView = mRootView.findViewById(R.id.fragment_hotsearch_rv);
         mHotSearchRecycleAdapter = new HotSearchRecycleAdapter(mHotSearchData);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mHotSearchRecycleAdapter);
-
-        return rootView;
+        Log.e(TAG, "onCreateView: hahaha" );
+        mHotSearchRecycleAdapter.setOnHotSearchRecycleViewListener(new HotSearchRecycleAdapter.HotSearchViewListener() {
+            @Override
+            public void onHotSearchItemClick(View view, String data, int position) {
+                searchResultFragment = new SearchResultFragment();
+                Bundle bundle=new Bundle();
+                Log.e(TAG, "onHotSearchItemClick: "+data );
+                bundle.putString("key",data);
+                mSearchView.setQuery(data,true);
+//                searchResultFragment.setArguments(bundle);
+//                FragmentManager fm = getChildFragmentManager();
+//                FragmentTransaction transaction = fm.beginTransaction();
+//                transaction.addToBackStack(null);
+//                transaction.add(R.id.fragment_searchresult_ll, searchResultFragment);
+//                transaction.commit();
+            }
+        });
+        return mRootView;
     }
 
     @Override
@@ -145,6 +172,8 @@ public class SearchViewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Toast.makeText(mActivity, "open", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "onQueryTextSubmit: hello" + v.getId());
+                //StartUtils.startActivityById(mActivity,v.getId());
             }
         });
         //搜索框关闭
@@ -161,6 +190,18 @@ public class SearchViewFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 //文本提交
                 Toast.makeText(mActivity, "submit", Toast.LENGTH_SHORT).show();
+
+
+                searchResultFragment = new SearchResultFragment();
+                Bundle bundle=new Bundle();
+                bundle.putString("key",query);
+                searchResultFragment.setArguments(bundle);
+                FragmentManager fm = getChildFragmentManager();
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.addToBackStack(null);
+                transaction.add(R.id.fragment_searchresult_ll, searchResultFragment);
+                transaction.commit();
+                //StartUtils.startActivityById(mActivity,mRootView.getId());
                 return false;
             }
 
@@ -187,12 +228,13 @@ public class SearchViewFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
-                Toast.makeText(mActivity, e.toString(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "onError: "+e.toString() );
             }
         });
     }
 
     public void jsonDecodeRVHotSearch(String str) {
+        mHotSearchData.clear();
         try {
             JSONObject jsonObject = new JSONObject(str);
             JSONArray jsonArray = jsonObject.getJSONArray("data");

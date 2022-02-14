@@ -1,5 +1,6 @@
 package com.example.wanandroid.page.adapter;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class HomeArticleRecycleAdapter extends RecyclerView.Adapter<HomeArticleR
     public void onBindViewHolder(@NonNull InnerHolder holder, int position) {
         holder.tvAuthor.setText(mData.get(position).getAuthor());
         holder.tvTime.setText(mData.get(position).getTime());
-        holder.tvTitle.setText(mData.get(position).getTitle());
+        holder.tvTitle.setText(Html.fromHtml(mData.get(position).getTitle(), Html.FROM_HTML_MODE_COMPACT));
         holder.tvContent.setText(mData.get(position).getContent());
         holder.tvChapterName.setText(mData.get(position).getChapterName());
 
