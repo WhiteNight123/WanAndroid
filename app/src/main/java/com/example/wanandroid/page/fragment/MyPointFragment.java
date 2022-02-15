@@ -1,5 +1,7 @@
 package com.example.wanandroid.page.fragment;
 
+import static com.example.wanandroid.page.fragment.MyFragment.LOGIN_STATE;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,15 +94,18 @@ public class MyPointFragment extends Fragment {
         mRootView = inflater.inflate(R.layout.fragment_my_point, container, false);
         mPref = mActivity.getSharedPreferences("login", Context.MODE_PRIVATE);
 
-        initData();
-        mToolbar = mRootView.findViewById(R.id.fragment_mypoint_toolbar);
-        mTextView = mRootView.findViewById(R.id.fragment_mypoint_tv);
-        mRecyclerView = mRootView.findViewById(R.id.fragment_mypoint_rv);
-        mRecycleAdapter = new MyPointRecycleAdapter(mPointData);
-        mRecyclerView.setAdapter(mRecycleAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
-
+        if(LOGIN_STATE==0){
+            Toast.makeText(mActivity,"请先登录",Toast.LENGTH_SHORT);
+        }else {
+            initData();
+            mToolbar = mRootView.findViewById(R.id.fragment_mypoint_toolbar);
+            mTextView = mRootView.findViewById(R.id.fragment_mypoint_tv);
+            mRecyclerView = mRootView.findViewById(R.id.fragment_mypoint_rv);
+            mRecycleAdapter = new MyPointRecycleAdapter(mPointData);
+            mRecyclerView.setAdapter(mRecycleAdapter);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
+            mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
+        }
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setHasOptionsMenu(true);
