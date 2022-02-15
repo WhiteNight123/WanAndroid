@@ -70,7 +70,7 @@ public class COVIDFragment extends Fragment {
                     break;
                 case 19:
                     Log.e(TAG, "handleMessage: " + msg.obj.toString());
-                    Log.e(TAG, "handleMessage: " + mPref.getString("张家口", ""));
+                    Log.e(TAG, "handleMessage: " + mPref.getString(mEditText.getText().toString(), ""));
                     jsonDecode2(msg.obj.toString());
 
 
@@ -92,9 +92,11 @@ public class COVIDFragment extends Fragment {
         mRootView = inflater.inflate(R.layout.fragment_covid, container, false);
         mPref = mActivity.getSharedPreferences("covid", Context.MODE_PRIVATE);
 
-        if (mPref.getString("合肥", "") == null) {
+        if (mPref.getString("合肥", "") == "") {
             initData();
         }
+        Log.e(TAG, "onCreateView: "+mPref.getString("合肥", "") );
+
         mTvCity = mRootView.findViewById(R.id.fragment_covid_tv_city);
         mTvRisk = mRootView.findViewById(R.id.fragment_covid_tv_risk_level);
         mTvInDesc = mRootView.findViewById(R.id.fragment_covid_tv_in_desc);
@@ -110,6 +112,8 @@ public class COVIDFragment extends Fragment {
                     Toast.makeText(mActivity, "城市名称不合法", Toast.LENGTH_SHORT).show();
                 } else {
                     String url = "https://v2.alapi.cn/api/springTravel/query?token=dRW8QdwxVa5L4RCr&from=10017&to=" + mPref.getString(mEditText.getText().toString(), "");
+                    Log.e(TAG, "onClick: "+mEditText.getText().toString() );
+                    Log.e(TAG, "onClick: "+mPref.getString("重庆","") );
                     Log.e(TAG, "onClick: " + url);
                     NetUtil.sendHttpRequest(url, "GET", null, new NetCallbackListener() {
                         @Override

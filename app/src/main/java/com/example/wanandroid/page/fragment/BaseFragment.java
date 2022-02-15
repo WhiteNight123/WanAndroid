@@ -21,7 +21,6 @@ import com.example.wanandroid.widget.ContentPage;
 public abstract class BaseFragment extends Fragment implements View.OnClickListener {
     public ContentPage contentPage;
     public ProgressDialog pdLoading;
-    //private ArrayList<Subscriber>subscribers;
 
     @Nullable
     @Override

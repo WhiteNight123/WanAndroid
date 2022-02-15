@@ -27,7 +27,6 @@ import com.example.wanandroid.R;
 import com.example.wanandroid.bean.HomeBannerData;
 import com.example.wanandroid.utils.NetCallbackListener;
 import com.example.wanandroid.utils.NetUtil;
-import com.example.wanandroid.utils.StartUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

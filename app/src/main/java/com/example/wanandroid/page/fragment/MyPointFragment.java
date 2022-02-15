@@ -98,7 +98,6 @@ public class MyPointFragment extends Fragment {
             Toast.makeText(mActivity,"请先登录",Toast.LENGTH_SHORT);
         }else {
             initData();
-            mToolbar = mRootView.findViewById(R.id.fragment_mypoint_toolbar);
             mTextView = mRootView.findViewById(R.id.fragment_mypoint_tv);
             mRecyclerView = mRootView.findViewById(R.id.fragment_mypoint_rv);
             mRecycleAdapter = new MyPointRecycleAdapter(mPointData);
@@ -106,6 +105,7 @@ public class MyPointFragment extends Fragment {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
             mRecyclerView.addItemDecoration(new DividerItemDecoration(mActivity, DividerItemDecoration.VERTICAL));
         }
+        mToolbar = mRootView.findViewById(R.id.fragment_mypoint_toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setHasOptionsMenu(true);
