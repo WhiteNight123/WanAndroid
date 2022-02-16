@@ -4,7 +4,7 @@
 ## 简介
 采用单Activity多Fragment
 ## 功能
-暂无
+实现了WanAndroid的部分功能
 ## 心得
 代码 命名 注释 一团糟  
 UI丑陋  
