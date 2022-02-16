@@ -8,7 +8,6 @@
         android:id="@+id/fragment_covid_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:hint="请输入要查询的城市 例:张家口"
         app:layout_constraintEnd_toStartOf="@id/fragment_covid_btn"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,13 +17,23 @@
         android:id="@+id/fragment_covid_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="查询"
         app:backgroundTint="@color/teal_700"
         app:cornerRadius="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/fragment_covid_et"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/fragment_covid_pb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_covid_et" />
 
     <TextView
         android:id="@+id/fragment_covid_tv_city"
@@ -36,7 +45,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_covid_et" />
+        app:layout_constraintTop_toBottomOf="@id/fragment_covid_pb" />
 
     <TextView
         android:id="@+id/fragment_covid_tv_health_code_name"

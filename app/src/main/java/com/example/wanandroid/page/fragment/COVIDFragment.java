@@ -30,6 +30,7 @@ import com.example.wanandroid.R;
 import com.example.wanandroid.bean.HomeArticleData;
 import com.example.wanandroid.utils.NetCallbackListener;
 import com.example.wanandroid.utils.NetUtil;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,21 +57,20 @@ public class COVIDFragment extends Fragment {
     private Button mButton;
     private ImageView mIvHealthyCode;
     private SharedPreferences mPref;
+    private LinearProgressIndicator mProgress;
 
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message msg) {
             switch (msg.what) {
-
                 case 18:
                     jsonDecode1(msg.obj.toString());
                     break;
                 case 19:
                     Log.e(TAG, "handleMessage: " + msg.obj.toString());
+                    mProgress.setVisibility(View.INVISIBLE);
                     jsonDecode2(msg.obj.toString());
-
-
                     break;
             }
             return false;
@@ -88,12 +88,10 @@ public class COVIDFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_covid, container, false);
         mPref = mActivity.getSharedPreferences("covid", Context.MODE_PRIVATE);
-
+        mProgress = mRootView.findViewById(R.id.fragment_covid_pb);
         if (mPref.getString("合肥", "") == "") {
             initData();
         }
-
-
         mTvCity = mRootView.findViewById(R.id.fragment_covid_tv_city);
         mTvRisk = mRootView.findViewById(R.id.fragment_covid_tv_risk_level);
         mTvInDesc = mRootView.findViewById(R.id.fragment_covid_tv_in_desc);
@@ -108,6 +106,7 @@ public class COVIDFragment extends Fragment {
                 if (mPref.getString(mEditText.getText().toString(), "") == null) {
                     Toast.makeText(mActivity, "城市名称不合法", Toast.LENGTH_SHORT).show();
                 } else {
+                    mProgress.setVisibility(View.VISIBLE);
                     String url = "https://v2.alapi.cn/api/springTravel/query?token=dRW8QdwxVa5L4RCr&from=10017&to=" + mPref.getString(mEditText.getText().toString(), "");
                     Log.e(TAG, "onClick: " + url);
                     NetUtil.sendHttpRequest(url, "GET", null, new NetCallbackListener() {
@@ -121,6 +120,12 @@ public class COVIDFragment extends Fragment {
 
                         @Override
                         public void onError(Exception e) {
+                            mRootView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgress.setVisibility(View.INVISIBLE);
+                                }
+                            });
                             e.printStackTrace();
                         }
                     });

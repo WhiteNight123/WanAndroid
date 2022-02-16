@@ -11,13 +11,23 @@
         android:id="@+id/fragment_mypoint_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/fragment_mypoint_pb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"/>
+    <ViewStub
+        android:id="@+id/fragment_mypoint_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/net_error"/>
 
     <TextView
         android:id="@+id/fragment_mypoint_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="0"
         android:textColor="@color/purple_500"
         android:textSize="64sp"
         android:textStyle="bold" />

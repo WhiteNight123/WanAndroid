@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ import com.example.wanandroid.bean.HomeArticleData;
 import com.example.wanandroid.page.adapter.MyPointRecycleAdapter;
 import com.example.wanandroid.utils.NetCallbackListener;
 import com.example.wanandroid.utils.NetUtil;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,8 +56,10 @@ public class MyPointFragment extends Fragment {
     private Toolbar mToolbar;
     private TextView mTextView;
     private RecyclerView mRecyclerView;
+    private ViewStub mViewStub;
     private SharedPreferences mPref;
     private MyPointRecycleAdapter mRecycleAdapter;
+    private LinearProgressIndicator mProgress;
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message msg) {
@@ -65,6 +69,7 @@ public class MyPointFragment extends Fragment {
                         JSONObject jsonObject = new JSONObject(msg.obj.toString());
                         JSONObject jsonObject1 = jsonObject.getJSONObject("data");
                         String point = jsonObject1.getString("coinCount");
+                        mProgress.setVisibility(View.INVISIBLE);
                         mTextView.setText(point);
                         Log.e(TAG, "handleMessage: " + point);
 
@@ -95,8 +100,10 @@ public class MyPointFragment extends Fragment {
         mPref = mActivity.getSharedPreferences("login", Context.MODE_PRIVATE);
 
         if(LOGIN_STATE==0){
-            Toast.makeText(mActivity,"请先登录",Toast.LENGTH_SHORT);
+            Toast.makeText(mActivity,"请先登录",Toast.LENGTH_SHORT).show();
         }else {
+            mViewStub=mRootView.findViewById(R.id.fragment_mypoint_vs);
+            mProgress=mRootView.findViewById(R.id.fragment_mypoint_pb);
             initData();
             mTextView = mRootView.findViewById(R.id.fragment_mypoint_tv);
             mRecyclerView = mRootView.findViewById(R.id.fragment_mypoint_rv);
@@ -125,7 +132,6 @@ public class MyPointFragment extends Fragment {
                         FragmentTransaction transaction = fm.beginTransaction();
                         transaction.addToBackStack(null);
                         transaction.add(R.id.fragment_main, rankFragment);
-
                         transaction.commit();
                 }
 
@@ -145,6 +151,7 @@ public class MyPointFragment extends Fragment {
     }
 
     private void initData() {
+        mProgress.setVisibility(View.VISIBLE);
         NetUtil.sendHttpRequest("https://www.wanandroid.com/lg/coin/userinfo/json", mPref.getString("cookie", ""), new NetCallbackListener() {
             @Override
             public void onFinish(String response) {
@@ -157,6 +164,14 @@ public class MyPointFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
+                mRootView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 更新UI
+                        mProgress.setVisibility(View.INVISIBLE);
+                        mViewStub.inflate();
+                    }});
+
                 Log.e(TAG, "onError: " + e.toString());
 
             }

@@ -12,10 +12,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/fragment_rank_pb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_rank_toolbar" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_rank_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_rank_toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/fragment_rank_pb" />
 </androidx.constraintlayout.widget.ConstraintLayout>

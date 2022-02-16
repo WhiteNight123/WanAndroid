@@ -189,9 +189,6 @@ public class SearchViewFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 //文本提交
-                Toast.makeText(mActivity, "submit", Toast.LENGTH_SHORT).show();
-
-
                 searchResultFragment = new SearchResultFragment();
                 Bundle bundle=new Bundle();
                 bundle.putString("key",query);

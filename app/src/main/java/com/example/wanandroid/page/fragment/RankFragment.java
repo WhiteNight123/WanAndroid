@@ -23,6 +23,7 @@ import com.example.wanandroid.bean.HomeArticleData;
 import com.example.wanandroid.page.adapter.QuestionRecycleAdapter;
 import com.example.wanandroid.utils.NetCallbackListener;
 import com.example.wanandroid.utils.NetUtil;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,12 +43,15 @@ public class RankFragment extends Fragment {
     private Toolbar mToolbar;
     private RecyclerView mRecycleView;
     private QuestionRecycleAdapter mAdapter;
+    private LinearProgressIndicator mProgress;
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message msg) {
             switch (msg.what) {
                 case 11:
                     jsonDecodeData(msg.obj.toString());
+                    mProgress.setVisibility(View.INVISIBLE);
+
                     mAdapter.notifyDataSetChanged();
             }
             return false;
@@ -67,6 +71,8 @@ public class RankFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_rank, container, false);
+        mProgress=mRootView.findViewById(R.id.fragment_rank_pb);
+        mProgress.setVisibility(View.VISIBLE);
         initData();
         mToolbar = mRootView.findViewById(R.id.fragment_rank_toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
@@ -99,6 +105,12 @@ public class RankFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
+                mRootView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgress.setVisibility(View.INVISIBLE);
+                    }
+                });
                 e.printStackTrace();
             }
         });

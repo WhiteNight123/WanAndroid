@@ -16,8 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +25,7 @@ import com.example.wanandroid.bean.HomeArticleData;
 import com.example.wanandroid.page.adapter.HomeArticleRecycleAdapter;
 import com.example.wanandroid.utils.NetCallbackListener;
 import com.example.wanandroid.utils.NetUtil;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,11 +40,12 @@ import java.util.ArrayList;
  */
 public class TopHubFragment extends Fragment {
     private static final String TAG = "TopHubFragment";
-    private ArrayList<HomeArticleData> mData=new ArrayList<>();
+    private ArrayList<HomeArticleData> mData = new ArrayList<>();
     private Activity mActivity;
     private View mRootView;
     private RecyclerView mRecycleView;
     private HomeArticleRecycleAdapter mAdapter;
+    private LinearProgressIndicator mProgress;
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
@@ -53,6 +53,7 @@ public class TopHubFragment extends Fragment {
             switch (msg.what) {
                 case 15:
                     jsonDecode(msg.obj.toString());
+                    mProgress.setVisibility(View.INVISIBLE);
                     mAdapter.notifyDataSetChanged();
                     break;
             }
@@ -70,6 +71,8 @@ public class TopHubFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_tophub, container, false);
+        mProgress = mRootView.findViewById(R.id.fragment_tophub_pb);
+        mProgress.setVisibility(View.VISIBLE);
         initData();
         mRecycleView = mRootView.findViewById(R.id.fragment_tophub_rv);
         mAdapter = new HomeArticleRecycleAdapter(mData);
@@ -106,6 +109,12 @@ public class TopHubFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgress.setVisibility(View.INVISIBLE);
+                    }
+                });
                 e.printStackTrace();
             }
         });
@@ -113,12 +122,12 @@ public class TopHubFragment extends Fragment {
 
     private void jsonDecode(String str) {
         try {
-            JSONObject jsonObject=new JSONObject(str);
-            JSONObject jsonObject1=jsonObject.getJSONObject("data");
-            JSONArray jsonArray=jsonObject1.getJSONArray("list");
-            for(int i=0;i<jsonArray.length();i++){
-                JSONObject jsonObject2=jsonArray.getJSONObject(i);
-                HomeArticleData data=new HomeArticleData();
+            JSONObject jsonObject = new JSONObject(str);
+            JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+            JSONArray jsonArray = jsonObject1.getJSONArray("list");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject2 = jsonArray.getJSONObject(i);
+                HomeArticleData data = new HomeArticleData();
                 data.setTitle("");
                 data.setContent(jsonObject2.getString("title"));
                 data.setUrl(jsonObject2.getString("link"));
@@ -129,6 +138,7 @@ public class TopHubFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
     @Override
     public void onStart() {
         super.onStart();
