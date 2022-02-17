@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -110,6 +111,12 @@ public class SearchResultFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mActivity, "网络遇到错误了", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 Log.d(TAG, "onError: " + e.toString());
             }
         });
@@ -163,6 +170,7 @@ public class SearchResultFragment extends Fragment {
     }
 
     private void jsonDecodeRV(String jsonData) {
+        mSearchData.clear();
 
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
