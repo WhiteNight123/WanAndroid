@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -104,6 +105,12 @@ public class ZhihuFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mActivity, "网络遇到错误了", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 e.printStackTrace();
             }
         });
@@ -123,6 +130,17 @@ public class ZhihuFragment extends Fragment {
                 data.setTime(jsonObject2.getString("image"));
                 mData.add(data);
             }
+            JSONArray jsonArray2 = jsonObject1.getJSONArray("stories");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject2 = jsonArray2.getJSONObject(i);
+                HomeArticleData data = new HomeArticleData();
+                data.setAuthor(jsonObject2.getString("hint"));
+                data.setTitle(jsonObject2.getString("title"));
+                data.setUrl(jsonObject2.getString("url"));
+                data.setTime(jsonObject2.getJSONArray("images").getString(0));
+                mData.add(data);
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

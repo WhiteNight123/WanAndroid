@@ -3,8 +3,6 @@ package com.example.wanandroid.page.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wanandroid.R;
 import com.example.wanandroid.bean.HomeArticleData;
-import com.example.wanandroid.page.adapter.HomeArticleRecycleAdapter;
-import com.example.wanandroid.utils.NetCallbackListener;
-import com.example.wanandroid.utils.NetUtil;
 
 import java.util.ArrayList;
 
@@ -35,8 +29,6 @@ import java.util.ArrayList;
 public class ToolFragment extends Fragment implements View.OnClickListener {
     private ArrayList<HomeArticleData> mData = new ArrayList<>();
     private static final String TAG = "ToolFragment";
-    private RecyclerView mRecycleView;
-    private HomeArticleRecycleAdapter mAdapter;
     private Activity mActivity;
     private View mRootView;
     private Button mBtnWeather;
@@ -45,19 +37,6 @@ public class ToolFragment extends Fragment implements View.OnClickListener {
     private Button mBtnOneArticle;
     private Button mBtnZhiHu;
     private Button mBtnCovid;
-
-    private Handler mHandler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(@NonNull Message msg) {
-            switch (msg.what) {
-                case 13:
-
-                    break;
-            }
-
-            return false;
-        }
-    });
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -79,10 +58,8 @@ public class ToolFragment extends Fragment implements View.OnClickListener {
         mBtnOneArticle.setOnClickListener(this::onClick);
         mBtnZhiHu = mRootView.findViewById(R.id.fragment_tool_btn_zhihu);
         mBtnZhiHu.setOnClickListener(this::onClick);
-        mBtnCovid=mRootView.findViewById(R.id.fragment_tool_btn_COVID);
+        mBtnCovid = mRootView.findViewById(R.id.fragment_tool_btn_COVID);
         mBtnCovid.setOnClickListener(this::onClick);
-
-
         return mRootView;
     }
 
@@ -90,7 +67,6 @@ public class ToolFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fragment_tool_btn_weather:
-
                 WeatherFragment weatherFragment = new WeatherFragment();
                 FragmentManager fm1 = getParentFragmentManager();
                 FragmentTransaction transaction1 = fm1.beginTransaction();
@@ -131,7 +107,7 @@ public class ToolFragment extends Fragment implements View.OnClickListener {
                 transaction5.commit();
                 break;
             case R.id.fragment_tool_btn_COVID:
-                COVIDFragment covidFragment=new COVIDFragment();
+                COVIDFragment covidFragment = new COVIDFragment();
                 FragmentManager fm6 = getParentFragmentManager();
                 FragmentTransaction transaction6 = fm6.beginTransaction();
                 transaction6.addToBackStack(null);
@@ -140,23 +116,6 @@ public class ToolFragment extends Fragment implements View.OnClickListener {
                 break;
 
         }
-    }
-
-    private void initData() {
-        NetUtil.sendHttpRequest("https://v2.alapi.cn/api/eventHistory?token=dRW8QdwxVa5L4RCr", "GET", null, new NetCallbackListener() {
-            @Override
-            public void onFinish(String response) {
-                Message message = Message.obtain();
-                message.what = 13;
-                message.obj = response;
-                mHandler.sendMessage(message);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
 

@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -99,49 +101,62 @@ public class COVIDFragment extends Fragment {
         mTvHealthyCode = mRootView.findViewById(R.id.fragment_covid_tv_health_code_name);
         mIvHealthyCode = mRootView.findViewById(R.id.fragment_covid_tv_health_code_picture);
         mEditText = mRootView.findViewById(R.id.fragment_covid_et);
+        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    refreshData(v.getText().toString());
+                }
+                return false;
+            }
+        });
         mButton = mRootView.findViewById(R.id.fragment_covid_btn);
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPref.getString(mEditText.getText().toString(), "") == null) {
-                    Toast.makeText(mActivity, "城市名称不合法", Toast.LENGTH_SHORT).show();
-                } else {
-                    mProgress.setVisibility(View.VISIBLE);
-                    String url = "https://v2.alapi.cn/api/springTravel/query?token=dRW8QdwxVa5L4RCr&from=10017&to=" + mPref.getString(mEditText.getText().toString(), "");
-                    Log.e(TAG, "onClick: " + url);
-                    NetUtil.sendHttpRequest(url, "GET", null, new NetCallbackListener() {
-                        @Override
-                        public void onFinish(String response) {
-                            Message message = Message.obtain();
-                            message.what = 19;
-                            message.obj = response;
-                            mHandler.sendMessage(message);
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            mRootView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mProgress.setVisibility(View.INVISIBLE);
-                                }
-                            });
-                            e.printStackTrace();
-                        }
-                    });
-                }
-                InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(INPUT_METHOD_SERVICE);
-                View view = mActivity.getWindow().peekDecorView();
-                if (null != view) {
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
-
+                refreshData(mEditText.getText().toString());
             }
         });
 
         return mRootView;
     }
 
+    private void refreshData(String str) {
+        if ("".equals(mPref.getString(str, ""))) {
+            Toast.makeText(mActivity, "城市名称不合法", Toast.LENGTH_SHORT).show();
+        } else {
+            mProgress.setVisibility(View.VISIBLE);
+            String url = "https://v2.alapi.cn/api/springTravel/query?token=dRW8QdwxVa5L4RCr&from=10017&to=" + mPref.getString(str, "");
+            Log.e(TAG, "onClick: " + url);
+            NetUtil.sendHttpRequest(url, "GET", null, new NetCallbackListener() {
+                @Override
+                public void onFinish(String response) {
+                    Message message = Message.obtain();
+                    message.what = 19;
+                    message.obj = response;
+                    mHandler.sendMessage(message);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    mRootView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(mActivity, "网络遇到错误了", Toast.LENGTH_SHORT).show();
+                            mProgress.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                    e.printStackTrace();
+                }
+            });
+            InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(INPUT_METHOD_SERVICE);
+            View view = mActivity.getWindow().peekDecorView();
+            if (null != view) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+
+    }
 
     private void initData() {
         NetUtil.sendHttpRequest("https://v2.alapi.cn/api/springTravel/city?token=dRW8QdwxVa5L4RCr", "GET", null, new NetCallbackListener() {

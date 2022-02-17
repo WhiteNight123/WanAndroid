@@ -1,5 +1,7 @@
 package com.example.wanandroid.page.fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.wanandroid.R;
@@ -26,6 +30,7 @@ import org.json.JSONObject;
  * @data 2022/2/15
  */
 public class OneArticleFragment extends Fragment {
+    private Activity mActivity;
     private TextView mTvTitle;
     private TextView mTvAuthor;
     private TextView mTvContent;
@@ -41,6 +46,12 @@ public class OneArticleFragment extends Fragment {
             return false;
         }
     });
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mActivity=(AppCompatActivity)context;
+    }
 
     @Nullable
     @Override
@@ -66,6 +77,12 @@ public class OneArticleFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mActivity, "网络遇到错误了", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 e.printStackTrace();
             }
         });

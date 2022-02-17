@@ -158,6 +158,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     message.obj = responseData;
                     mHandler.sendMessage(message);
                 } catch (Exception e) {
+                    mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(mActivity, "网络遇到错误了", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     e.printStackTrace();
                 }
             }

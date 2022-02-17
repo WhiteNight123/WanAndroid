@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,13 +20,14 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.wanandroid.R;
 import com.example.wanandroid.bean.HomeArticleData;
+import com.example.wanandroid.bean.HomeBannerData;
 import com.example.wanandroid.page.adapter.HomeArticleRecycleAdapter;
 import com.example.wanandroid.page.adapter.HomeBannerPagerAdapter;
-import com.example.wanandroid.R;
-import com.example.wanandroid.bean.HomeBannerData;
 import com.example.wanandroid.utils.NetCallbackListener;
 import com.example.wanandroid.utils.NetUtil;
 
@@ -50,8 +53,11 @@ public class HomeFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private Activity mActivity;
     private View mRootView;
+    private ViewStub mViewStub;
+
     private HomeBannerPagerAdapter mBannerPagerAdapter;
     private HomeArticleRecycleAdapter mArticleRecycleAdapter;
+    private SwipeRefreshLayout mRefreshLayout;
 
     private boolean mFirstLoading = true;
 
@@ -62,6 +68,10 @@ public class HomeFragment extends Fragment {
             switch (msg.what) {
                 case 1:
                     jsonDecodeVP2(msg.obj.toString());
+                    if (mRefreshLayout.isRefreshing()) {
+                        mRefreshLayout.setRefreshing(false);
+                        Toast.makeText(mActivity, "刷新成功", Toast.LENGTH_SHORT).show();
+                    }
                     mBannerPagerAdapter.notifyDataSetChanged();
                     Log.d(TAG, "Handler1" + mBannerData.toString());
 
@@ -93,8 +103,16 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_home, container, false);
-        initData();
+        mViewStub = mRootView.findViewById(R.id.fragment_home_vs);
 
+        initData();
+        mRefreshLayout = mRootView.findViewById(R.id.fragment_home_srl);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initData();
+            }
+        });
         mViewPager2 = mRootView.findViewById(R.id.home_item_vp2);
         mBannerPagerAdapter = new HomeBannerPagerAdapter(mActivity.getApplicationContext(), mBannerData);
         mViewPager2.setAdapter(mBannerPagerAdapter);
@@ -119,12 +137,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (!mFirstLoading) {
-            //如果不是第一次加载，刷新数据
-            mBannerPagerAdapter.notifyDataSetChanged();
-            mArticleRecycleAdapter.notifyDataSetChanged();
-        }
-        mFirstLoading = false;
+        Log.e(TAG, "onResume: ");
     }
 
 
@@ -137,6 +150,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void initData() {
+
         NetUtil.sendHttpRequest("https://www.wanandroid.com/banner/json", "GET", null, new NetCallbackListener() {
             @Override
             public void onFinish(String response) {
@@ -148,6 +162,18 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        mViewStub.inflate();
+                        if (mRefreshLayout.isRefreshing()) {
+                            mRefreshLayout.setRefreshing(false);
+                        }
+                        Toast.makeText(mActivity, "网络遇到错误了", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
 
             }
         });
@@ -168,15 +194,15 @@ public class HomeFragment extends Fragment {
         NetUtil.sendHttpRequest("https://www.wanandroid.com/article/list/0/json", "GET", null, new NetCallbackListener() {
             @Override
             public void onFinish(String response) {
-                Message message=Message.obtain();
-                message.what=12;
-                message.obj=response;
+                Message message = Message.obtain();
+                message.what = 12;
+                message.obj = response;
                 handler.sendMessage(message);
             }
 
             @Override
             public void onError(Exception e) {
-e.printStackTrace();
+                e.printStackTrace();
             }
         });
     }
@@ -236,11 +262,12 @@ e.printStackTrace();
             e.printStackTrace();
         }
     }
+
     private void jsonDecodeRV2(String jsonData) {
 
         try {
             JSONObject jsonObject = new JSONObject(jsonData);
-            JSONObject jsonObject1=jsonObject.getJSONObject("data");
+            JSONObject jsonObject1 = jsonObject.getJSONObject("data");
             JSONArray jsonArray = jsonObject1.getJSONArray("datas");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject data = jsonArray.getJSONObject(i);

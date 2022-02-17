@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.wanandroid.R;
 import com.example.wanandroid.bean.HomeArticleData;
@@ -43,6 +45,7 @@ public class QuestionFragment extends Fragment {
     private RecyclerView mRecycleView;
     private ArrayList<HomeArticleData> mQuestionData = new ArrayList<>();
     private HomeArticleRecycleAdapter mAdapter;
+    private SwipeRefreshLayout mRefreshLayout;
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
@@ -51,6 +54,10 @@ public class QuestionFragment extends Fragment {
                 case 10:
                     Log.e(TAG, "Handler2" + msg.obj.toString());
                     jsonDecodeRV(msg.obj.toString());
+                    if (mRefreshLayout.isRefreshing()) {
+                        mRefreshLayout.setRefreshing(false);
+                        Toast.makeText(mActivity, "刷新成功", Toast.LENGTH_SHORT).show();
+                    }
                     mAdapter.notifyDataSetChanged();
 
                     break;
@@ -72,6 +79,15 @@ public class QuestionFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_question, container, false);
         initData();
+        mRefreshLayout = mRootView.findViewById(R.id.fragment_question_srl);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initData();
+
+            }
+        });
+
         mRecycleView = mRootView.findViewById(R.id.fragment_question_rv);
         mAdapter = new HomeArticleRecycleAdapter(mQuestionData);
         mRecycleView.setAdapter(mAdapter);
@@ -106,6 +122,16 @@ public class QuestionFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mRefreshLayout.isRefreshing()) {
+                            mRefreshLayout.setRefreshing(false);
+                        }
+                        Toast.makeText(mActivity, "网络遇到错误了", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 e.printStackTrace();
             }
         });

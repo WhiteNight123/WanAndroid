@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -98,6 +99,12 @@ public class WeatherFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mActivity, "网络遇到错误了", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 e.printStackTrace();
             }
         });

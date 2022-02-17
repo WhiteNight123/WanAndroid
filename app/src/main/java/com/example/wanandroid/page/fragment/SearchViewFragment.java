@@ -171,7 +171,6 @@ public class SearchViewFragment extends Fragment {
         mSearchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mActivity, "open", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onQueryTextSubmit: hello" + v.getId());
                 //StartUtils.startActivityById(mActivity,v.getId());
             }
@@ -180,7 +179,6 @@ public class SearchViewFragment extends Fragment {
         mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                Toast.makeText(mActivity, "close", Toast.LENGTH_SHORT).show();
                 return false;
             }
         });

@@ -133,6 +133,7 @@ public class MyPointFragment extends Fragment {
                         transaction.addToBackStack(null);
                         transaction.add(R.id.fragment_main, rankFragment);
                         transaction.commit();
+                        break;
                 }
 
                 return false;
