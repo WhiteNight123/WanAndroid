@@ -10,34 +10,34 @@
 fragment的重叠,嵌套,穿透,白屏,fragment之间的通信非常难实现,fragment的生命周期,fragment的回退栈bug,fragment的toolbar和activity的toolbar的坑,fragment和输入法的坑...
 
 ## 功能
-<img src="https://gitee.com/heihun666/WanAndroid/raw/master/演示动画.gif" alt="总体展示" title="总体展示" width="200" height="440" />
+<img src="演示动画.gif" alt="总体展示" title="总体展示"   />
 
-<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/home.jpg" alt="首页" title="首页" width="200" height="440"/>
+<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/home.jpg" alt="首页" title="首页" width="180" height="400"/>
 
 主界面用 **ToolBar+BottomNavigationView + ViewPager2 + Fragment**  
 用**SwipeRefreshLayou**t实现下拉刷新  
 banner是**ViewPager2**,最外层也是ViewPager2,这里出现了滑动冲突,外层的ViewPager2消耗了滑动,导致内部的banner不能滑动,通过**自定义View**套在两层ViewPager2中间拦截滑动,当内部滑动完后外部才能滑动
 
-<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/search.jpg" alt="搜索" title="搜索" width="200" height="440"/>
+<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/search.jpg" alt="搜索" title="搜索" width="180" height="400"/>
 
 搜索界面 **Toolbar+SearchView+recycleView**(热搜)
 
-<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/login.jpg" alt="登录" title="登录" width="200" height="440"/>
+<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/login.jpg" alt="登录" title="登录" width="180" height="400"/>
 
 直接用之前作业写得界面  
 用**SharedPreferences**储存的cookie,实现自动登录
 
-<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/my.jpg" alt="我的" title="我的" width="200" height="440" />
+<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/my.jpg" alt="我的" title="我的" width="180" height="400" />
 
-<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/myrank.jpg" alt="我的积分" title="我的积分" width="200" height="440"/>
+<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/myrank.jpg" alt="我的积分" title="我的积分" width="180" height="400"/>
 
 用**LinearProgressIndicator**显示进度条
 
-<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/tool.jpg" alt="工具" title="工具" width="200" height="440"/>
+<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/tool.jpg" alt="工具" title="工具" width="180" height="400"/>
 
 用**NestedScrollView**包裹实现滑动  
 
-<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/webview.jpg" alt="网页" title="网页" width="200" height="440"/>
+<img src="https://gitee.com/heihun666/WanAndroid/raw/master/picture/webview.jpg" alt="网页" title="网页" width="180" height="400"/>
 
 用**WebView**展示网页,**FloatingActionButton**实现返回  
 
